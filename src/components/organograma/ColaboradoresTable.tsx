@@ -15,16 +15,18 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Pencil, UserX, Plus, Building2, Trash2 } from "lucide-react";
-import { useColaboradores, useUpdateColaborador, useDeleteColaborador, type ColaboradorWithRelations } from "@organograma/hooks/useColaboradores";
-import { useSetores } from "@organograma/hooks/useSetores";
-import { useAuth } from "@core/contexts/AuthContext";
-import { toast } from "@core/hooks/use-toast";
+import { useColaboradores, useUpdateColaborador, useDeleteColaborador, type ColaboradorWithRelations } from "@/hooks/useColaboradores";
+import { useSetores } from "@/hooks/useSetores";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "@/hooks/use-toast";
 import ColaboradorForm from "./ColaboradorForm";
 import SetorForm from "./SetorForm";
 
 export default function ColaboradoresTable() {
   const { isAdmin, hasRole } = useAuth();
   const canSeeSalary = hasRole("admin_geral") || hasRole("admin_ceo");
+  const canAdd = isAdmin || hasRole("admin_ceo") || hasRole("admin_diretor");
+  const canEdit = isAdmin || hasRole("admin_ceo") || hasRole("admin_diretor");
   const { data: colaboradores, isLoading } = useColaboradores(true);
   const { data: setores } = useSetores();
   const updateMut = useUpdateColaborador();
@@ -95,12 +97,14 @@ export default function ColaboradoresTable() {
         </Select>
 
         <div className="ml-auto flex gap-2">
-          {isAdmin && (
+          {canAdd && (
             <>
-              <Button variant="outline" onClick={() => setShowSetores(true)}>
-                <Building2 className="h-4 w-4 mr-1" />
-                Setores
-              </Button>
+              {isAdmin && (
+                <Button variant="outline" onClick={() => setShowSetores(true)}>
+                  <Building2 className="h-4 w-4 mr-1" />
+                  Setores
+                </Button>
+              )}
               <Button onClick={() => setShowAdd(true)}>
                 <Plus className="h-4 w-4 mr-1" />
                 Colaborador
@@ -120,7 +124,7 @@ export default function ColaboradoresTable() {
               <TableHead>Gestor</TableHead>
               <TableHead>Status</TableHead>
               {canSeeSalary && <TableHead>Salário</TableHead>}
-              {isAdmin && <TableHead className="w-28">Ações</TableHead>}
+              {canEdit && <TableHead className="w-28">Ações</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -145,7 +149,7 @@ export default function ColaboradoresTable() {
                       {c.salario ? `R$ ${c.salario.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "—"}
                     </TableCell>
                   )}
-                  {isAdmin && (
+                  {canEdit && (
                     <TableCell>
                       <div className="flex gap-1">
                         <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditColab(c)} title="Editar">
@@ -154,9 +158,11 @@ export default function ColaboradoresTable() {
                         <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => handleToggleAtivo(c)} title={c.ativo ? "Desativar" : "Reativar"}>
                           <UserX className="h-3.5 w-3.5" />
                         </Button>
-                        <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => setDeletingColab(c)} title="Excluir">
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
+                        {isAdmin && (
+                          <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive hover:text-destructive" onClick={() => setDeletingColab(c)} title="Excluir">
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   )}

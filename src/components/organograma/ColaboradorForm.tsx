@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from "@/components/ui/dialog";
@@ -7,10 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useSetores } from "@organograma/hooks/useSetores";
-import { useColaboradores, useCreateColaborador, useUpdateColaborador, type ColaboradorWithRelations } from "@organograma/hooks/useColaboradores";
-import { useAuth } from "@core/contexts/AuthContext";
-import { toast } from "@core/hooks/use-toast";
+import { useSetores } from "@/hooks/useSetores";
+import { useColaboradores, useCreateColaborador, useUpdateColaborador, type ColaboradorWithRelations } from "@/hooks/useColaboradores";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "@/hooks/use-toast";
 
 interface ColaboradorFormProps {
   open: boolean;
@@ -20,13 +20,19 @@ interface ColaboradorFormProps {
 
 export default function ColaboradorForm({ open, onOpenChange, colaborador }: ColaboradorFormProps) {
   const isEditing = !!colaborador;
-  const { hasRole } = useAuth();
+  const { hasRole, user } = useAuth();
   const canSeeSalary = hasRole("admin_geral") || hasRole("admin_ceo");
+  const isDiretor = hasRole("admin_diretor") && !hasRole("admin_geral") && !hasRole("admin_ceo");
 
   const { data: setores } = useSetores();
   const { data: colaboradores } = useColaboradores();
   const createMut = useCreateColaborador();
   const updateMut = useUpdateColaborador();
+
+  const userColaborador = useMemo(
+    () => colaboradores?.find((c) => c.user_id === user?.id),
+    [colaboradores, user?.id]
+  );
 
   const [nome, setNome] = useState(colaborador?.nome ?? "");
   const [cargo, setCargo] = useState(colaborador?.cargo ?? "");
@@ -34,6 +40,14 @@ export default function ColaboradorForm({ open, onOpenChange, colaborador }: Col
   const [missao, setMissao] = useState(colaborador?.missao ?? "");
   const [setorId, setSetorId] = useState(colaborador?.setor_id ?? "");
   const [gestorId, setGestorId] = useState(colaborador?.gestor_id ?? "");
+
+  // Para admin_diretor criando novo colaborador: pré-preencher setor automaticamente
+  useEffect(() => {
+    if (!isEditing && isDiretor && !setorId && userColaborador?.setor_id) {
+      setSetorId(userColaborador.setor_id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userColaborador?.setor_id, isEditing, isDiretor]);
   const [salario, setSalario] = useState(colaborador?.salario?.toString() ?? "");
 
   const saving = createMut.isPending || updateMut.isPending;
