@@ -6,7 +6,7 @@ export type ColaboradorWithRelations = {
   id: string;
   nome: string;
   cargo: string | null;
-  funcao: string | null;
+  cargo_id: string | null;
   missao: string | null;
   salario: number | null;
   setor_id: string | null;
@@ -19,6 +19,7 @@ export type ColaboradorWithRelations = {
   updated_at: string;
   pdi_setores: { id: string; nome: string } | null;
   gestor: { id: string; nome: string } | null;
+  cargo_rel: { id: string; nome: string; tipo: string; nivel: string } | null;
 };
 
 export const useColaboradores = (includeInactive = false) => {
@@ -27,7 +28,9 @@ export const useColaboradores = (includeInactive = false) => {
     queryFn: async () => {
       let query = supabase
         .from("pdi_colaboradores")
-        .select("*, pdi_setores(id, nome), gestor:pdi_colaboradores!gestor_id(id, nome)")
+        .select(
+          "*, pdi_setores(id, nome), gestor:pdi_colaboradores!gestor_id(id, nome), cargo_rel:pdi_cargos(id, nome, tipo, nivel)" as any,
+        )
         .order("nome");
 
       if (!includeInactive) {
@@ -36,7 +39,7 @@ export const useColaboradores = (includeInactive = false) => {
 
       const { data, error } = await query;
       if (error) throw error;
-      return data as ColaboradorWithRelations[];
+      return data as unknown as ColaboradorWithRelations[];
     },
   });
 };

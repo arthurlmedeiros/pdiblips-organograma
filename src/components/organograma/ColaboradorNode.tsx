@@ -6,8 +6,7 @@ import { Users, Pencil, Trash2 } from "lucide-react";
 
 export type ColaboradorNodeData = {
   nome: string;
-  cargo: string | null;
-  funcao: string | null;
+  cargoNome: string | null;
   setorNome: string | null;
   isGestor: boolean;
   isAdmin?: boolean;
@@ -62,7 +61,7 @@ const ColaboradorNode = memo(({ data }: NodeProps) => {
 
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold text-foreground truncate">{d.nome}</p>
-          {d.cargo && <p className="text-xs text-muted-foreground truncate">{d.cargo}</p>}
+          {d.cargoNome && <p className="text-xs text-muted-foreground truncate">{d.cargoNome}</p>}
         </div>
 
         {d.isGestor && (
@@ -70,18 +69,13 @@ const ColaboradorNode = memo(({ data }: NodeProps) => {
         )}
       </div>
 
-      <div className="flex items-center gap-1.5 mt-2 flex-wrap">
-        {d.funcao && (
-          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-            {d.funcao}
-          </Badge>
-        )}
-        {d.setorNome && (
+      {d.setorNome && (
+        <div className="flex items-center gap-1.5 mt-2 flex-wrap">
           <Badge variant="outline" className="text-[10px] px-1.5 py-0">
             {d.setorNome}
           </Badge>
-        )}
-      </div>
+        </div>
+      )}
 
       <Handle type="source" position={Position.Bottom} className="!bg-primary !w-2.5 !h-2.5 !border-2 !border-background" />
     </div>

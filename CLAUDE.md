@@ -14,10 +14,13 @@ Módulo de organograma e gestão de colaboradores. Renderiza a estrutura hierár
 | `src/components/organograma/OrgChartFlow.tsx` | Componente React Flow com layout automático de hierarquia |
 | `src/components/organograma/ColaboradorNode.tsx` | Nó customizado do React Flow para exibir colaborador |
 | `src/components/organograma/ColaboradoresTable.tsx` | Tabela de colaboradores com filtros e ações |
-| `src/components/organograma/ColaboradorForm.tsx` | Formulário (Dialog) para criar/editar colaborador |
+| `src/components/organograma/ColaboradorForm.tsx` | Formulário (Dialog) para criar/editar colaborador — cargo via `CargoCombobox` |
 | `src/components/organograma/SetorForm.tsx` | Formulário (Dialog) para criar/editar setor |
-| `src/hooks/useColaboradores.ts` | CRUD de `pdi_colaboradores` via React Query |
+| `src/components/organograma/CargoCombobox.tsx` | Dropdown pesquisável de cargos com opção "Criar novo" |
+| `src/components/organograma/CargoFormDialog.tsx` | Form para cadastrar cargo (nome + tipo + nível obrigatórios) |
+| `src/hooks/useColaboradores.ts` | CRUD de `pdi_colaboradores` via React Query (inclui join `cargo_rel`) |
 | `src/hooks/useSetores.ts` | CRUD de `pdi_setores` via React Query |
+| `src/hooks/useCargos.ts` | CRUD do catálogo `pdi_cargos` via React Query |
 
 ---
 
@@ -27,8 +30,9 @@ Módulo de organograma e gestão de colaboradores. Renderiza a estrutura hierár
 
 | Tabela | Descrição |
 |--------|-----------|
-| `pdi_colaboradores` | Colaborador — campos: `nome`, `cargo`, `email`, `setor_id`, `gestor_id`, `user_id` |
+| `pdi_colaboradores` | Colaborador — `nome`, `cargo_id` (FK → pdi_cargos), `cargo` (text legado), `setor_id`, `gestor_id`, `user_id`, `salario`. Campo `funcao` foi removido. |
 | `pdi_setores` | Setor/departamento — campos: `nome`, `descricao`, `responsavel_id` |
+| `pdi_cargos` | Catálogo central de cargos — `nome`, `tipo` (enum `pdi_cargo_tipo`: Financeiro/FINZA/Mkt & Vendas/TI/Operações/Outros), `nivel` (enum `pdi_cargo_nivel`: Diretoria/Head/Sênior/Gerência). Também referenciado por `pdi_salarios_pesquisa.cargo_id`. |
 
 ### Hierarquia (Self-reference)
 

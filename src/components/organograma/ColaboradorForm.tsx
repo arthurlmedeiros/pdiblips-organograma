@@ -11,6 +11,7 @@ import { useSetores } from "@/hooks/useSetores";
 import { useColaboradores, useCreateColaborador, useUpdateColaborador, type ColaboradorWithRelations } from "@/hooks/useColaboradores";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
+import CargoCombobox from "./CargoCombobox";
 
 interface ColaboradorFormProps {
   open: boolean;
@@ -35,8 +36,7 @@ export default function ColaboradorForm({ open, onOpenChange, colaborador }: Col
   );
 
   const [nome, setNome] = useState(colaborador?.nome ?? "");
-  const [cargo, setCargo] = useState(colaborador?.cargo ?? "");
-  const [funcao, setFuncao] = useState(colaborador?.funcao ?? "");
+  const [cargoId, setCargoId] = useState<string | null>(colaborador?.cargo_id ?? null);
   const [missao, setMissao] = useState(colaborador?.missao ?? "");
   const [setorId, setSetorId] = useState(colaborador?.setor_id ?? "");
   const [gestorId, setGestorId] = useState(colaborador?.gestor_id ?? "");
@@ -58,8 +58,7 @@ export default function ColaboradorForm({ open, onOpenChange, colaborador }: Col
 
     const payload = {
       nome: nome.trim(),
-      cargo: cargo.trim() || null,
-      funcao: funcao.trim() || null,
+      cargo_id: cargoId,
       missao: missao.trim() || null,
       setor_id: setorId || null,
       gestor_id: gestorId || null,
@@ -98,15 +97,9 @@ export default function ColaboradorForm({ open, onOpenChange, colaborador }: Col
             <Input id="nome" value={nome} onChange={(e) => setNome(e.target.value)} required />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <Label htmlFor="cargo">Cargo</Label>
-              <Input id="cargo" value={cargo} onChange={(e) => setCargo(e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="funcao">Função</Label>
-              <Input id="funcao" value={funcao} onChange={(e) => setFuncao(e.target.value)} />
-            </div>
+          <div className="space-y-2">
+            <Label>Cargo</Label>
+            <CargoCombobox value={cargoId} onChange={setCargoId} />
           </div>
 
           <div className="space-y-2">

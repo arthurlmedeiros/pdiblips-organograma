@@ -136,7 +136,7 @@ export default function ColaboradoresTable() {
               filtered.map((c) => (
                 <TableRow key={c.id}>
                   <TableCell className="font-medium">{c.nome}</TableCell>
-                  <TableCell>{c.cargo ?? "—"}</TableCell>
+                  <TableCell>{c.cargo_rel?.nome ?? "—"}</TableCell>
                   <TableCell>{c.pdi_setores?.nome ?? "—"}</TableCell>
                   <TableCell>{c.gestor?.nome ?? "—"}</TableCell>
                   <TableCell>

@@ -134,8 +134,7 @@ export default function OrgChartFlow({ colaboradores }: OrgChartFlowProps) {
           : { x: c.posicao_x ?? 0, y: c.posicao_y ?? 0 },
         data: {
           nome: c.nome,
-          cargo: c.cargo,
-          funcao: c.funcao,
+          cargoNome: c.cargo_rel?.nome ?? null,
           setorNome: c.pdi_setores?.nome ?? null,
           isGestor: gestorIds.has(c.id),
           isAdmin,
